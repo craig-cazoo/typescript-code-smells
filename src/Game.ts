@@ -1,49 +1,56 @@
 type Symbol = "X" | "O" | " ";
 
 export class Game {
-  private _lastSymbol: Symbol = ' ';
   private _board: Board = new Board();
+  private _currentPlayer: Symbol = "X";
 
-  public Play(symbol: Symbol, x: number, y: number): void {
-    //if first move
-    if (this._lastSymbol == ' ') {
-      if (symbol == 'O') {
-        throw new Error("Invalid first player");
-      }
+  public Play(position: Position): void {
+    this._board.AddTileAt({
+      Symbol: this._currentPlayer,
+      Position: position,
+    });
+    this._switchPlayer();
+  }
+
+  private _switchPlayer() {
+    if (this._currentPlayer === "X") {
+      this._currentPlayer = "O";
+    } else {
+      this._currentPlayer = "X";
     }
-    //if not first move but player repeated
-    else if (symbol == this._lastSymbol) {
-      throw new Error("Invalid next player");
-    }
-    //if not first move but play on an already played tile
-    else if (this._board.TileAt(x, y).Symbol != ' ') {
-      throw new Error("Invalid position");
+  }
+
+  private _checkColumn(x: number): boolean {
+    if (this._board.TileAt({ X: x, Y: 0 }).Symbol === " ") {
+      return false;
     }
 
-    // update game state
-    this._lastSymbol = symbol;
-    this._board.AddTileAt(symbol, x, y);
+    return [0, 1, 2].every(
+      (idx) =>
+        this._board.TileAt({ X: x, Y: idx }).Symbol ===
+        this._board.TileAt({ X: x, Y: 0 }).Symbol
+    );
   }
 
   public Winner(): Symbol {
     for (let x = 0; x < 3; x++) {
-      if (this._board.TileAt(x, 0).Symbol != ' ') {
-        if (this._board.TileAt(x, 0).Symbol ==
-          this._board.TileAt(x, 1).Symbol &&
-          this._board.TileAt(x, 2).Symbol == this._board.TileAt(x, 1).Symbol) {
-          return this._board.TileAt(x, 0).Symbol;
-        }
+      if (this._checkColumn(x)) {
+        return this._board.TileAt({ X: x, Y: 0 }).Symbol;
       }
     }
 
-    return ' ';
+    return " ";
   }
 }
 
 interface Tile {
+  Position: Position;
+  Symbol: Symbol;
+}
+
+interface Position {
   X: number;
   Y: number;
-  Symbol: Symbol;
 }
 
 class Board {
@@ -52,17 +59,25 @@ class Board {
   constructor() {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        const tile: Tile = {X: i, Y: j, Symbol: " "};
+        const tile: Tile = { Position: { X: i, Y: j }, Symbol: " " };
         this._plays.push(tile);
       }
     }
   }
 
-  public TileAt(x: number, y: number): Tile {
-    return this._plays.find((t: Tile) => t.X == x && t.Y == y)!
+  public TileAt(position: Position): Tile {
+    return this._plays.find(
+      (t: Tile) => t.Position.X == position.X && t.Position.Y == position.Y
+    )!;
   }
 
-  public AddTileAt(symbol: Symbol, x: number, y: number): void {
-    this._plays.find((t: Tile) => t.X == x && t.Y == y)!.Symbol = symbol;
+  public AddTileAt(tile: Tile): void {
+    const playedTile = this.TileAt(tile.Position);
+
+    if (playedTile.Symbol != " ") {
+      throw new Error("Invalid position");
+    }
+
+    playedTile.Symbol = tile.Symbol;
   }
 }
