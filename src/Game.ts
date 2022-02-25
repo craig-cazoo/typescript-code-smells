@@ -5,10 +5,7 @@ export class Game {
   private _currentPlayer: Symbol = "X";
 
   public Play(position: Position): void {
-    this._board.AddTileAt({
-      Symbol: this._currentPlayer,
-      Position: position,
-    });
+    this._board.setSymbol(position, this._currentPlayer);
     this._switchPlayer();
   }
 
@@ -20,22 +17,33 @@ export class Game {
     }
   }
 
-  private _checkColumn(x: number): boolean {
-    if (this._board.TileAt({ X: x, Y: 0 }).Symbol === " ") {
+  private winningStates: [Position, Position, Position][] = [
+    [{X: 0, Y: 0}, {X: 0, Y: 1}, {X: 0, Y: 2}],
+    [{X: 1, Y: 0}, {X: 1, Y: 1}, {X: 1, Y: 2}],
+    [{X: 2, Y: 0}, {X: 2, Y: 1}, {X: 2, Y: 2}],
+    [{X: 0, Y: 0}, {X: 1, Y: 0}, {X: 2, Y: 0}],
+    [{X: 0, Y: 1}, {X: 1, Y: 1}, {X: 2, Y: 1}],
+    [{X: 0, Y: 2}, {X: 1, Y: 2}, {X: 2, Y: 2}],
+    [{X: 0, Y: 0}, {X: 1, Y: 1}, {X: 2, Y: 2}],
+    [{X: 2, Y: 0}, {X: 1, Y: 1}, {X: 0, Y: 2}],
+  ]
+
+  private _checkIfWinningState(positions: Position[]): boolean {
+    if (this._board.getSymbol(positions[0]) === " ") {
       return false;
     }
 
-    return [0, 1, 2].every(
-      (idx) =>
-        this._board.TileAt({ X: x, Y: idx }).Symbol ===
-        this._board.TileAt({ X: x, Y: 0 }).Symbol
+    return positions.every(
+      (position) =>
+        this._board.getSymbol(position) ===
+        this._board.getSymbol(positions[0])
     );
   }
 
   public Winner(): Symbol {
-    for (let x = 0; x < 3; x++) {
-      if (this._checkColumn(x)) {
-        return this._board.TileAt({ X: x, Y: 0 }).Symbol;
+    for (const winningState of this.winningStates) {
+      if (this._checkIfWinningState(winningState)) {
+        return this._board.getSymbol(winningState[0])
       }
     }
 
@@ -59,25 +67,29 @@ class Board {
   constructor() {
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        const tile: Tile = { Position: { X: i, Y: j }, Symbol: " " };
+        const tile: Tile = {Position: {X: i, Y: j}, Symbol: " "};
         this._plays.push(tile);
       }
     }
   }
 
-  public TileAt(position: Position): Tile {
+  private TileAt(position: Position): Tile {
     return this._plays.find(
       (t: Tile) => t.Position.X == position.X && t.Position.Y == position.Y
     )!;
   }
 
-  public AddTileAt(tile: Tile): void {
-    const playedTile = this.TileAt(tile.Position);
+  public getSymbol(position: Position): Symbol {
+    return this.TileAt(position).Symbol;
+  }
+
+  public setSymbol(position: Position, symbol: Symbol): void {
+    const playedTile = this.TileAt(position);
 
     if (playedTile.Symbol != " ") {
       throw new Error("Invalid position");
     }
 
-    playedTile.Symbol = tile.Symbol;
+    playedTile.Symbol = symbol;
   }
 }

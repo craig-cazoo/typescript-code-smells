@@ -25,7 +25,7 @@ describe("TicTacToe game", () => {
     game.Play({ X: 1, Y: 1 });
     game.Play({ X: 0, Y: 2 });
 
-    var winner = game.Winner();
+    const winner = game.Winner();
 
     expect(winner).toBe("X");
   });
@@ -38,7 +38,7 @@ describe("TicTacToe game", () => {
     game.Play({ X: 2, Y: 2 });
     game.Play({ X: 0, Y: 2 });
 
-    var winner = game.Winner();
+    const winner = game.Winner();
 
     expect(winner).toBe("O");
   });
@@ -50,7 +50,7 @@ describe("TicTacToe game", () => {
     game.Play({ X: 0, Y: 1 });
     game.Play({ X: 1, Y: 2 });
 
-    var winner = game.Winner();
+    const winner = game.Winner();
 
     expect(winner).toBe("X");
   });
@@ -63,7 +63,7 @@ describe("TicTacToe game", () => {
     game.Play({ X: 2, Y: 2 });
     game.Play({ X: 1, Y: 2 });
 
-    var winner = game.Winner();
+    const winner = game.Winner();
 
     expect(winner).toBe("O");
   });
@@ -75,7 +75,7 @@ describe("TicTacToe game", () => {
     game.Play({ X: 0, Y: 1 });
     game.Play({ X: 2, Y: 2 });
 
-    var winner = game.Winner();
+    const winner = game.Winner();
 
     expect(winner).toBe("X");
   });
@@ -88,19 +88,67 @@ describe("TicTacToe game", () => {
     game.Play({ X: 0, Y: 1 });
     game.Play({ X: 2, Y: 2 });
 
-    var winner = game.Winner();
+    const winner = game.Winner();
 
     expect(winner).toBe("O");
   });
 
-  it.skip("should declare player X as winner if it plays three in left row", () => {
+  it("should declare player X as winner if it plays three in top row", () => {
     game.Play({ X: 0, Y: 0 });
     game.Play({ X: 0, Y: 1 });
     game.Play({ X: 1, Y: 0 });
     game.Play({ X: 1, Y: 1 });
     game.Play({ X: 2, Y: 0 });
 
-    var winner = game.Winner();
+    const winner = game.Winner();
+
+    expect(winner).toBe("X");
+  });
+
+  it("should declare player X as winner if it plays three in middle row", () => {
+    game.Play({ X: 0, Y: 1 });
+    game.Play({ X: 0, Y: 2 });
+    game.Play({ X: 1, Y: 1 });
+    game.Play({ X: 1, Y: 2 });
+    game.Play({ X: 2, Y: 1 });
+
+    const winner = game.Winner();
+
+    expect(winner).toBe("X");
+  });
+
+  it("should declare player X as winner if it plays three in bottom row", () => {
+    game.Play({ X: 0, Y: 2 });
+    game.Play({ X: 0, Y: 1 });
+    game.Play({ X: 1, Y: 2 });
+    game.Play({ X: 1, Y: 1 });
+    game.Play({ X: 2, Y: 2 });
+
+    const winner = game.Winner();
+
+    expect(winner).toBe("X");
+  });
+
+  it("should declare player X as winner if it plays the diagonal from top left to bottom right", () => {
+    game.Play({ X: 0, Y: 0 });
+    game.Play({ X: 0, Y: 1 });
+    game.Play({ X: 1, Y: 1 });
+    game.Play({ X: 1, Y: 2 });
+    game.Play({ X: 2, Y: 2 });
+
+    const winner = game.Winner();
+
+    expect(winner).toBe("X");
+  });
+
+  it("should declare player X as winner if it plays the diagonal from bottom left to top right", () => {
+    game.Play({ X: 2, Y: 0 });
+    game.Play({ X: 0, Y: 1 });
+    game.Play({ X: 1, Y: 1 });
+    game.Play({ X: 1, Y: 2 });
+    game.Play({ X: 0, Y: 2 });
+
+    const winner = game.Winner();
 
     expect(winner).toBe("X");
   });
